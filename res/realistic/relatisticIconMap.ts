@@ -1,0 +1,52 @@
+export default function realisticIconMap(icon: string) {
+  switch (icon) {
+    case '1':
+      return require('./1.jpg');
+    case '1n':
+      return require('./1n.jpg');
+    case '2':
+      return require('./2.jpg');
+    case '2n':
+      return require('./2n.jpg');
+    case '2r':
+      return require('./2r.jpg');
+    case '2rn':
+      return require('./2rn.jpg');
+    case '3':
+      return require('./3.jpg');
+    case '3n':
+      return require('./3n.jpg');
+    case '3tm':
+      return require('./3tm.jpg');
+    case '4':
+      return require('./4.jpg');
+    case '4n':
+      return require('./4n.jpg');
+    case '4r':
+      return require('./4r.jpg');
+    case '4rn':
+      return require('./4rn.jpg');
+    case '4tn':
+      return require('./4tn.png');
+    case '5':
+      return require('./5.jpg');
+    case '5n':
+      return require('./5n.jpg');
+    case '6':
+      return require('./6.jpg');
+    case '6n':
+      return require('./6n.jpg');
+    case '7':
+      return require('./7.jpg');
+    case '7n':
+      return require('./7n.jpg');
+    case '8':
+      return require('./8.jpg');
+    case '8n':
+      return require('./8n.jpg');
+    case '9':
+      return require('./9.jpg');
+    case '9n':
+      return require('./9n.jpg');
+  }
+}

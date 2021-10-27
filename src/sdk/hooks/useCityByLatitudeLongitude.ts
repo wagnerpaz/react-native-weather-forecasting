@@ -1,13 +1,16 @@
 import axios from 'axios';
 import {useEffect, useState} from 'react';
+// due to how react-native-dotenv works with webpack it's needed to ts-ignore the next line
+// @ts-ignore
 import {API_BASE_URL, API_TOKEN} from 'react-native-dotenv';
 
 export default function useCityByLatitudeLongitude(
-  latitude: number,
-  longitude: number,
+  latitude: number | undefined,
+  longitude: number | undefined,
 ) {
   const [city, setCity] = useState<City | null>();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState();
 
   useEffect(() => {
     if (!latitude || !longitude) {
@@ -18,23 +21,21 @@ export default function useCityByLatitudeLongitude(
       .get(
         `${API_BASE_URL}/api/v1/locale/city?latitude=${latitude}&longitude=${longitude}&token=${API_TOKEN}`,
       )
-      .then(function (response) {
+      .then(response => {
+        console.log(response.data, latitude, longitude);
         setCity(response.data as City);
         setLoading(false);
       })
-      .catch(function (error) {
+      .catch(_error => {
         setCity(null);
-        console.log(
-          `${API_BASE_URL}/api/v1/locale/city?latitude=${latitude}&longitude=${longitude}&token=${API_TOKEN}`,
-        );
-        console.log('oii', error);
+        setError(_error);
       })
-      .finally(function () {
+      .finally(() => {
         setLoading(false);
       });
   }, [latitude, longitude]);
 
-  return {city, loading};
+  return {city, loading, error};
 }
 
 export interface City {
