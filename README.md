@@ -37,4 +37,4 @@ REFRESH_INTERVAL=30000
 
 ## Observations
 
-Changing locations on the AVD emulator doens't seem to affect the app directly (latitude and longitude doesn't change even with the setting of `maximumAge: 0`). My solution for this was installing a weather/forecast app from the Play Store and updating it, after this the location changed in my app too.
+Changing locations on the AVD emulator doesn't seem to affect the app directly (latitude and longitude doesn't change even with the setting of `maximumAge: 0`). My solution for this was setting up the Google Maps, allowing location in it, and after changing the city in the emulator, ensure that Maps know right where you are. After this react-native-geolocation service should update in the emulator.

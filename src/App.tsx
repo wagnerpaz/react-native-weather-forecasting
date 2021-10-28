@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useCallback, useContext, useEffect} from 'react';
 import {ScrollView, StatusBar, RefreshControl, Text} from 'react-native';
 import styled from 'styled-components/native';
 
@@ -28,20 +28,23 @@ const Content = () => {
   const {refresh: refreshCity, registered: registeredCity} =
     useContext(CityContext);
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     refreshPosition && refreshPosition();
     refreshCity && refreshCity();
-  };
+  }, [refreshPosition, refreshCity]);
+
+  console.log(Config.REFRESH_INTERVAL);
 
   useEffect(() => {
     const interval = setInterval(() => {
+      console.log('will refresh');
       refresh();
     }, +Config.REFRESH_INTERVAL);
 
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [refresh]);
 
   return (
     <Container>
@@ -70,9 +73,9 @@ const Content = () => {
           </>
         )}
       </ScrollView>
-      <Text>{Config.API_BASE_URL}</Text>
-      <Text>{Config.API_TOKEN}</Text>
-      <Text>{Config.REFRESH_INTERVAL}</Text>
+      <Text>API_BASE_URL={Config.API_BASE_URL}</Text>
+      <Text>API_TOKEN={Config.API_TOKEN}</Text>
+      <Text>REFRESH_INTERVAL={Config.REFRESH_INTERVAL}</Text>
     </Container>
   );
 };

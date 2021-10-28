@@ -26,6 +26,8 @@ export default function realisticIconMap(icon: string) {
       return require('./4r.jpg');
     case '4rn':
       return require('./4rn.jpg');
+    case '4t':
+      return require('./4t.png');
     case '4tn':
       return require('./4tn.png');
     case '5':
