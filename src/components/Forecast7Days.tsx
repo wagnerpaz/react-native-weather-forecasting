@@ -9,13 +9,16 @@ import useForecast15Days from '../sdk/hooks/useForecast15Days';
 import formatDateBr from '../utils/formatDateBr';
 
 const Forecast7Days: React.FC = () => {
-  const {city} = useContext(CityContext);
-  const {forecast} = useForecast15Days(city?.id);
+  const {city, refreshRequests} = useContext(CityContext);
+  const {forecast} = useForecast15Days(city?.id, refreshRequests);
   return (
     <Container>
       {forecast?.data.map(item => (
         <DayRow key={new Date(item.date).getTime()}>
-          <Icon source={realisticIconMap(item.text_icon.icon.day)} />
+          <Icon
+            source={realisticIconMap(item.text_icon.icon.day)}
+            resizeMode="contain"
+          />
           <Text>{formatDateBr(new Date(item.date))}</Text>
           <SpaceBetween>
             <Text>Min: {item.temperature.min}°</Text>
@@ -39,7 +42,7 @@ const DayRow = styled.View`
 
 const Icon = styled.Image`
   width: 40px;
-  height: 30px;
+  height: 40px;
   margin: 0 10px;
 `;
 

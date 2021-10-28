@@ -7,15 +7,17 @@ import CityContext from '../contexts/CityContext';
 import useCurrentWeather from '../sdk/hooks/useCurrentWeather';
 
 const CityTemperatureDisplay: React.FC = () => {
-  const {city} = useContext(CityContext);
-  const {weather} = useCurrentWeather(city?.id);
-  console.log(weather);
+  const {city, refreshRequests} = useContext(CityContext);
+  const {weather} = useCurrentWeather(city?.id, refreshRequests);
 
   return (
     <Container>
       <IconRow>
         {weather?.data.icon && (
-          <Icon source={realisticIconMap(weather.data.icon)} />
+          <Icon
+            source={realisticIconMap(weather.data.icon)}
+            resizeMode="contain"
+          />
         )}
         <Center>
           <CityName>{city?.name}</CityName>
@@ -40,10 +42,11 @@ const IconRow = styled.View`
 `;
 
 const Icon = styled.Image`
-  width: 120px;
+  width: 100px;
   height: 100px;
   margin-left: -50px;
   margin-right: 20px;
+  background-
 `;
 
 const CityName = styled.Text`

@@ -1,10 +1,14 @@
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-// due to how react-native-dotenv works with webpack it's needed to ts-ignore the next line
-// @ts-ignore
-import {API_BASE_URL, API_TOKEN} from 'react-native-dotenv';
+import Config from 'react-native-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function useCurrentWeather(cityId: number | undefined) {
+const STORAGE_KEY = 'current_weather';
+
+export default function useCurrentWeather(
+  cityId: number | undefined,
+  refreshRequest: number | undefined,
+) {
   const [weather, setWeather] = useState<Weather | null>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
@@ -16,24 +20,30 @@ export default function useCurrentWeather(cityId: number | undefined) {
 
     axios
       .get(
-        `${API_BASE_URL}/api/v1/weather/locale/${cityId}/current?token=${API_TOKEN}`,
+        `${Config.API_BASE_URL}/api/v1/weather/locale/${cityId}/current?token=${Config.API_TOKEN}`,
       )
       .then(response => {
         setWeather(response.data as Weather);
+        try {
+          AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(response.data));
+        } catch (e) {
+          console.error(e);
+        }
         setLoading(false);
       })
-      .catch(_error => {
-        console.log(
-          _error.message,
-          `${API_BASE_URL}/api/v1/weather/locale/${cityId}/current?token=${API_TOKEN}`,
-        );
-        setWeather(null);
+      .catch(async _error => {
+        try {
+          const value = await AsyncStorage.getItem(STORAGE_KEY);
+          setWeather(value ? JSON.parse(value) : null);
+        } catch (e) {
+          console.error(e);
+        }
         setError(_error);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [cityId]);
+  }, [cityId, refreshRequest]);
 
   return {weather, loading, error};
 }

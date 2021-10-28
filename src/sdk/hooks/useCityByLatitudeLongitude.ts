@@ -1,12 +1,15 @@
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-// due to how react-native-dotenv works with webpack it's needed to ts-ignore the next line
-// @ts-ignore
-import {API_BASE_URL, API_TOKEN} from 'react-native-dotenv';
+import Config from 'react-native-config';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const STORAGE_KEY = 'city';
 
 export default function useCityByLatitudeLongitude(
   latitude: number | undefined,
   longitude: number | undefined,
+  refreshRequest: number | undefined,
 ) {
   const [city, setCity] = useState<City | null>();
   const [loading, setLoading] = useState(true);
@@ -19,21 +22,30 @@ export default function useCityByLatitudeLongitude(
 
     axios
       .get(
-        `${API_BASE_URL}/api/v1/locale/city?latitude=${latitude}&longitude=${longitude}&token=${API_TOKEN}`,
+        `${Config.API_BASE_URL}/api/v1/locale/city?latitude=${latitude}&longitude=${longitude}&token=${Config.API_TOKEN}`,
       )
       .then(response => {
-        console.log(response.data, latitude, longitude);
         setCity(response.data as City);
+        try {
+          AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(response.data));
+        } catch (e) {
+          console.error(e);
+        }
         setLoading(false);
       })
-      .catch(_error => {
-        setCity(null);
+      .catch(async _error => {
+        try {
+          const value = await AsyncStorage.getItem(STORAGE_KEY);
+          setCity(value ? JSON.parse(value) : null);
+        } catch (e) {
+          console.error(e);
+        }
         setError(_error);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [latitude, longitude]);
+  }, [latitude, longitude, refreshRequest]);
 
   return {city, loading, error};
 }

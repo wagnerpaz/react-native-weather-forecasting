@@ -1,10 +1,14 @@
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-// due to how react-native-dotenv works with webpack it's needed to ts-ignore the next line
-// @ts-ignore
-import {API_BASE_URL, API_TOKEN} from 'react-native-dotenv';
+import Config from 'react-native-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function useForecast15Days(cityId: number | undefined) {
+const STORAGE_KEY = 'forecast_15days';
+
+export default function useForecast15Days(
+  cityId: number | undefined,
+  refreshRequest: number | undefined,
+) {
   const [forecast, setForecast] = useState<Forecast | null>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
@@ -16,20 +20,30 @@ export default function useForecast15Days(cityId: number | undefined) {
 
     axios
       .get(
-        `${API_BASE_URL}/api/v1/forecast/locale/${cityId}/days/15?token=${API_TOKEN}`,
+        `${Config.API_BASE_URL}/api/v1/forecast/locale/${cityId}/days/15?token=${Config.API_TOKEN}`,
       )
       .then(response => {
         setForecast(response.data as Forecast);
+        try {
+          AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(response.data));
+        } catch (e) {
+          console.error(e);
+        }
         setLoading(false);
       })
-      .catch(_error => {
-        setForecast(null);
+      .catch(async _error => {
+        try {
+          const value = await AsyncStorage.getItem(STORAGE_KEY);
+          setForecast(value ? JSON.parse(value) : null);
+        } catch (e) {
+          console.error(e);
+        }
         setError(_error);
       })
       .finally(() => {
         setLoading(false);
       });
-  }, [cityId]);
+  }, [cityId, refreshRequest]);
 
   return {forecast, loading, error};
 }

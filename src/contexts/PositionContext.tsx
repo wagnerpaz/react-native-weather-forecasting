@@ -1,14 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import {PermissionsAndroid} from 'react-native';
 
-import Geolocation from 'react-native-geolocation-service';
+import Geolocation, {GeoError} from 'react-native-geolocation-service';
 
 const PositionContext = React.createContext<ContextValue>({
   position: undefined,
+  refresh: undefined,
+  error: null,
 });
 
 export const PositionProvider: React.FC = ({children}) => {
   const [position, setPosition] = useState<Geolocation.GeoPosition>();
+  const [refreshRequests, setRefreshRequests] = useState(0);
+  const [error, setError] = useState<GeoError | null>(null);
 
   useEffect(() => {
     //react-native-geolocation-service assumes that the location permissions is granted on Android
@@ -27,19 +31,24 @@ export const PositionProvider: React.FC = ({children}) => {
         Geolocation.getCurrentPosition(
           _position => {
             setPosition(_position);
+            setError(null);
           },
-          error => {
-            // See error code charts below.
-            console.log(error.code, error.message);
+          _error => {
+            setError(_error);
           },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+          {enableHighAccuracy: false, timeout: 15000, maximumAge: 0},
         );
       }
     });
-  }, [setPosition]);
+  }, [setPosition, refreshRequests]);
 
   return (
-    <PositionContext.Provider value={{position}}>
+    <PositionContext.Provider
+      value={{
+        position,
+        refresh: () => setRefreshRequests(rr => rr + 1),
+        error,
+      }}>
       {children}
     </PositionContext.Provider>
   );
@@ -49,4 +58,6 @@ export default PositionContext;
 
 interface ContextValue {
   position: Geolocation.GeoPosition | undefined;
+  refresh: (() => void) | undefined;
+  error: GeoError | null;
 }
