@@ -1,18 +1,16 @@
-# BovControl Code Challenge
-
-## Weather and Forecast App
+# Weather Forecasting App
 
 The app was developed using raw React Native, without Expo. The project was scaffolded by using `react-native init` using the template for TypeScript. It was tested only on Android, being possible that it does not work at all on iOS.
 
-Libs used:
+## Libs used
 
-- axios
-- styled-components
+- [axios](https://github.com/axios/axios)
+- [styled-components](https://github.com/styled-components/styled-components)
 - react-native-geolocation-service
 - async-storage
 - react-native-config
 
-Features:
+## Features
 
 - Current Weather info
 - 7 days forecast with min and max temperature
